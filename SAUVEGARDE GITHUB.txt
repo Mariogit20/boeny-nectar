@@ -1,0 +1,49 @@
+
+AzureAD+SPSSE02MEN@DESKTOP-S95K8U0 MINGW64 /d/PYTHON DJANGO HOPES/github28_LandingPage
+$ git init
+Initialized empty Git repository in D:/PYTHON DJANGO HOPES/github28_LandingPage/
+.git/
+
+AzureAD+SPSSE02MEN@DESKTOP-S95K8U0 MINGW64 /d/PYTHON DJANGO HOPES/github28_LandingPage (master)
+$ git clone https://github.com/Mariogit20/boeny-nectar.git
+Cloning into 'boeny-nectar'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (3/3), done.
+
+AzureAD+SPSSE02MEN@DESKTOP-S95K8U0 MINGW64 /d/PYTHON DJANGO HOPES/github28_LandingPage (master)
+$ cd boeny-nectar
+
+AzureAD+SPSSE02MEN@DESKTOP-S95K8U0 MINGW64 /d/PYTHON DJANGO HOPES/github28_LandingPage/boeny-nectar (main)
+$ git add .
+git commit -m "Version finale du site Boeny Nectar"
+[main 7bc1ac8] Version finale du site Boeny Nectar
+ 12 files changed, 908 insertions(+)
+ create mode 100644 data.json
+ create mode 100644 email_Javascript.html
+ create mode 100644 images/baobab.jpg
+ create mode 100644 images/hero-2.jpg
+ create mode 100644 images/hero-3.jpg
+ create mode 100644 images/mangue.jpg
+ create mode 100644 images/photo-JusBoeny.jpg
+ create mode 100644 images/tamarin.jpg
+ create mode 100644 images/terroir.jpg
+ create mode 100644 index.html
+ create mode 100644 script.js
+ create mode 100644 style.css
+
+AzureAD+SPSSE02MEN@DESKTOP-S95K8U0 MINGW64 /d/PYTHON DJANGO HOPES/github28_LandingPage/boeny-nectar (main)
+$ git push
+Enumerating objects: 15, done.
+Counting objects: 100% (15/15), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (14/14), done.
+Writing objects: 100% (14/14), 849.99 KiB | 16.35 MiB/s, done.
+Total 14 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/Mariogit20/boeny-nectar.git
+   28ed584..7bc1ac8  main -> main
+
+AzureAD+SPSSE02MEN@DESKTOP-S95K8U0 MINGW64 /d/PYTHON DJANGO HOPES/github28_LandingPage/boeny-nectar (main)
+$
