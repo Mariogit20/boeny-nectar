@@ -1,0 +1,121 @@
+{
+  "brandName": "Boeny Nectar",
+  "hero": {
+    "headline": "L'Authentique Saveur du Boeny",
+    "subheadline": "Rafraîchissez-vous avec nos jus 100% naturels, préparés artisanalement sous le soleil de Mahajanga.",
+    "ctaText": "Commander mes jus",
+    "backgroundImages": [
+      "./images/photo-JusBoeny.jpg",
+      "./images/hero-2.jpg",
+      "./images/hero-3.jpg"
+    ]
+  },
+  "advantages": {
+    "sectionTitle": "Pourquoi choisir Boeny Nectar ?",
+    "items": [
+      { "icon": "☀️", "title": "Gorgé de Soleil", "description": "Des fruits sélectionnés à maturité dans la brousse majungaise." },
+      { "icon": "⚡", "title": "Boost d'Énergie", "description": "Très riche en Vitamine C, en calcium et en antioxydants." },
+      { "icon": "🌱", "title": "Bio & Équitable", "description": "Production artisanale qui soutient les coopératives locales." }
+    ]
+  },
+  "process": {
+    "sectionTitle": "De l'arbre à la bouteille",
+    "steps": [
+      { "icon": "🌳", "title": "1. Récolte Sauvage", "description": "Cueillette manuelle respectueuse de l'écosystème local." },
+      { "icon": "🧊", "title": "2. Extraction à froid", "description": "Pour préserver 100% des vitamines et des saveurs." },
+      { "icon": "🚚", "title": "3. Livraison Fraîche", "description": "Mise en bouteille expresse et expédition directe." }
+    ]
+  },
+  "terroir": {
+    "sectionTitle": "L'Exception du Terroir Majungais",
+    "leadText": "Plus de 300 jours de soleil par an donnent à nos fruits un caractère unique.",
+    "points": [
+      { "title": "La Terre Rouge du Boeny", "description": "Une terre minérale qui confère au fruit un goût plus intense." },
+      { "title": "Tradition Ancestrale", "description": "Méthodes traditionnelles garantissant un produit sans additifs." }
+    ],
+    "image": "./images/terroir.jpg"
+  },
+  "drinks": {
+    "sectionTitle": "Nos Spécialités",
+    "items": [
+      { "image": "./images/baobab.jpg", "title": "Jus de Baobab Pur", "price": "5 000 Ar", "description": "Concentré de vitamine C, idéal contre la fatigue." },
+      { "image": "./images/tamarin.jpg", "title": "Nectar de Tamarin", "price": "4 500 Ar", "description": "Désaltérant et doux-amer, parfait pour les fortes chaleurs." },
+      { "image": "./images/mangue.jpg", "title": "Mangue Fraîche", "price": "6 000 Ar", "description": "Onctueux et sucré, à base des meilleures mangues locales." }
+    ]
+  },
+  "testimonials": {
+    "sectionTitle": "Ils adorent le Boeny Nectar",
+    "reviews": [
+      { "name": "Rado M.", "rating": "⭐⭐⭐⭐⭐", "text": "Le jus de baobab me rappelle exactement celui que préparait ma grand-mère. Un vrai délice !" },
+      { "name": "Sitraka A.", "rating": "⭐⭐⭐⭐⭐", "text": "Très rafraîchissant. La livraison a été rapide et les bouteilles bien scellées." },
+      { "name": "Kanto R.", "rating": "⭐⭐⭐⭐", "text": "Le tamarin est excellent, pas trop sucré, juste parfait pour accompagner un repas." }
+    ]
+  },
+  "faq": {
+    "sectionTitle": "Questions Fréquentes",
+    "questions": [
+      { "q": "Vos jus contiennent-ils du sucre ajouté ?", "a": "Nous ajoutons une très légère touche de sucre de canne pur pour équilibrer l'acidité naturelle du baobab et du tamarin." },
+      { "q": "Combien de temps puis-je les conserver ?", "a": "Nos jus sont sans conservateurs. Ils se gardent au frais entre 3 et 5 jours après ouverture." },
+      { "q": "Livrez-vous en dehors de Mahajanga ?", "a": "Oui, nous expédions actuellement sur Antananarivo via des taxis-brousse réfrigérés (précommande requise)." }
+    ]
+  },
+  "orderOptions": {
+    "modalTitle": "Finaliser ma commande",
+    "modalSubtitle": "Choisissez le réseau qui vous convient le mieux :",
+    "paymentNotice": "Lorsque vous effectuez la <i><b>Commande de vos Marchandises dans vos messages</b></i>, veuillez mentionner le <b>Numéro de la RÉFÉRENCE</b> faisant foi de votre <b>Paiement</b> par Mobile Money (MVOLA ou Orange Money ou Airtel Money)",
+    "directOptions": {
+      "title": "Nos options de contact",
+      "phone": {
+        "url": "tel:+261340903559",
+        "label": "Appel Direct",
+        "color": "dark"
+      },
+      "sms": {
+        "url": "sms:+261340903559?body=Bonjour,%20je%20souhaite%20passer%20une%20commande.",
+        "label": "SMS",
+        "color": "secondary"
+      },
+      "email": {
+        "url": "mailto:halleymariomen@gmail.com?subject=Nouvelle%20Commande&body=Bonjour,%20je%20souhaite%20passer%20une%20commande.",
+        "label": "Email",
+        "color": "danger"
+      },
+      "whatsapp": {
+        "url": "https://wa.me/261340903559?text=Bonjour,%20je%20souhaite%20passer%20une%20commande.",
+        "label": "WhatsApp",
+        "color": "success"
+      },
+      "messenger": {
+        "url": "https://m.me/mario.mario.mario.52811",
+        "label": "Messenger",
+        "color": "primary"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/mariomariomario90/",
+        "label": "Instagram",
+        "color": "danger"
+      },
+      "linkedin": {
+        "url": "https://www.linkedin.com/in/halley-mario-andriantsimbaharilanto-2b4a25404/",
+        "label": "LinkedIn",
+        "color": "info"
+      },
+      "glow": {
+        "url": "https://VOTRE_LIEN_GLOW_ICI",
+        "label": "Glow",
+        "color": "warning"
+      }
+    }
+  },
+  "about": {
+    "title": "À Propos",
+    "description": "Nés de la passion pour le Boeny, nous collaborons avec les agriculteurs locaux pour vous offrir des jus authentiques.",
+    "contact": { "address": "Bord de la mer, Mahajanga 401", "phone": "+261 34 09 035 59", "email": "halleymariomen@gmail.com" },
+    "socialLinks": [
+      { "platform": "Facebook", "url": "https://web.facebook.com/mario.mario.mario.52811", "color": "primary" },
+      { "platform": "Instagram", "url": "https://www.instagram.com/mariomariomario90/", "color": "danger" },
+      { "platform": "LinkedIn", "url": "https://www.linkedin.com/in/halley-mario-andriantsimbaharilanto-2b4a25404/", "color": "info" }
+    ]
+  },
+  "footer": { "copyright": "© 2026 Boeny Nectar. Tous droits réservés." }
+}
