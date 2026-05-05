@@ -139,13 +139,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById('modal-title').textContent = data.orderOptions.modalTitle;
                 document.getElementById('modal-subtitle').textContent = data.orderOptions.modalSubtitle;
 
-                // Construction de la boîte d'alerte avec votre message
+                // Construction de la boîte d'alerte avec vos 2 points d'information
                 if(data.orderOptions.paymentNotice) {
+                    let numMvola = data.orderOptions.numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement || "";
+                    let nomMvola = data.orderOptions.nom_du_proprietaire_du_compte_mvola_correspondant_au_numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement || "";
+
                     document.getElementById('modal-notice').innerHTML = `
-                        <div class="alert alert-warning border-start border-warning border-4 shadow-sm d-flex mb-4 text-start" role="alert">
-                            <div class="fs-2 me-3 align-self-center">⚠️</div>
+                        <div class="alert alert-warning border-start border-warning border-4 shadow-sm mb-4 text-start" role="alert">
+                            <div class="d-flex mb-3">
+                                <div class="fs-2 me-3 align-self-center">⚠️</div>
+                                <div class="text-dark" style="font-size: 0.95rem;">
+                                    1) ${data.orderOptions.paymentNotice}
+                                </div>
+                            </div>
+                            <hr class="border-warning opacity-50">
                             <div class="text-dark" style="font-size: 0.95rem;">
-                                ${data.orderOptions.paymentNotice}
+                                2) Pour effectuer le <span style="text-decoration: underline;"><b>Paiement</b> avec <span style="font-weight: bold;">MVOLA</span></span>, voici le <u><i><b>Numéro de Téléphone</b> du <b>Vendeur</b></i></u> direct :
+                                <br><br>
+                                <span><span style="font-size:larger; color:blue;">${numMvola}</span> au nom de <span style="font-size:larger; color:blue;">${nomMvola}</span></span>
                             </div>
                         </div>
                     `;

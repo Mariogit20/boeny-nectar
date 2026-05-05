@@ -62,7 +62,9 @@
   "orderOptions": {
     "modalTitle": "Finaliser ma commande",
     "modalSubtitle": "Choisissez le réseau qui vous convient le mieux :",
-    "paymentNotice": "Lorsque vous effectuez la <i><b>Commande de vos Marchandises dans vos messages</b></i>, veuillez mentionner le <b>Numéro de la RÉFÉRENCE</b> faisant foi de votre <b>Paiement</b> par Mobile Money (MVOLA ou Orange Money ou Airtel Money)",
+    "paymentNotice": "Lorsque vous effectuez la <i><b>Commande de vos Marchandises dans vos messages</b></i>, veuillez mentionner le <b>Numéro de la RÉFÉRENCE</b> faisant foi de votre <b>Paiement</b> par Mobile Money (MVOLA ou Orange Money ou Airtel Money) ;",
+    "numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement": "+261340903559",
+    "nom_du_proprietaire_du_compte_mvola_correspondant_au_numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement": "martin pierre",
     "directOptions": {
       "title": "Nos options de contact",
       "phone": {
