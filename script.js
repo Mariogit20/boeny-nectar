@@ -170,12 +170,108 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(key !== 'title') {
                         const btnData = directOps[key];
                         directContainer.innerHTML += `
-                            <a href="${btnData.url}" target="_blank" class="btn btn-outline-${btnData.color} btn-lg fw-bold w-100 shadow-sm transition-hover">
+                            <button type="submit" data-platform="${key}" data-url="${btnData.url}" class="btn btn-outline-${btnData.color} btn-lg fw-bold w-100 shadow-sm transition-hover">
                                 Contacter via ${btnData.label}
-                            </a>
+                            </button>
                         `;
                     }
                 });
+
+                // --- LOGIQUE D'ENVOI DOUBLE (SOCIAL + EMAIL PROUVE AVEC JSON) ---
+                const orderForm = document.getElementById('clientOrderForm');
+                if(orderForm) {
+                    orderForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const submitter = e.submitter;
+                        const platform = submitter.getAttribute('data-platform');
+                        const socialUrl = submitter.getAttribute('data-url');
+
+                        // 1. Récupération et Horodatage (DATE ET HEURE EXACTES)
+                        const now = new Date();
+                        const dateString = now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                        
+                        // Pour le nom du "fichier" virtuel JSON
+                        const timestampCode = now.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0];
+
+                        // Récupération des champs du formulaire
+                        const infos = {
+                            nom: document.getElementById('clientName').value.trim(),
+                            email: document.getElementById('clientEmail').value.trim(),
+                            contact: document.getElementById('clientContact').value.trim(),
+                            pays: document.getElementById('clientCountry').value.trim(),
+                            adresse: document.getElementById('clientAddress').value.trim(),
+                            ref_paiement: document.getElementById('clientPaymentRef').value.trim(),
+                            msg: document.getElementById('clientMessage').value.trim()
+                        };
+
+                        // 2. Création de l'Objet JSON
+                        const jsonObject = {
+                            "date_commande": dateString,
+                            "heure_commande": timeString,
+                            "client": {
+                                "nom": infos.nom,
+                                "email": infos.email,
+                                "telephone": infos.contact
+                            },
+                            "livraison": {
+                                "pays": infos.pays,
+                                "adresse": infos.adresse
+                            },
+                            "paiement": {
+                                "reference_mobile_money": infos.ref_paiement
+                            },
+                            "details_commande": infos.msg
+                        };
+                        
+                        // Transformation de l'objet en texte JSON formaté
+                        const jsonText = JSON.stringify(jsonObject, null, 4);
+
+                        // 3. Formatage du message complet
+                        const fullMessage = `🕒 Date et Heure d'envoi : ${dateString} à ${timeString}\n\n` +
+                                            `👤 CLIENT: ${infos.nom}\n📧 EMAIL: ${infos.email}\n📞 CONTACT: ${infos.contact}\n` +
+                                            `🌍 DESTINATION: ${infos.pays} - ${infos.adresse}\n\n` +
+                                            `💳 RÉFÉRENCE PAIEMENT: ${infos.ref_paiement}\n\n` +
+                                            `🛒 DÉTAILS:\n${infos.msg}\n\n` +
+                                            `========================================\n` +
+                                            `📋 DONNÉES JSON (Copie Automatique)\n` +
+                                            `ID: ${timestampCode}_${infos.email}.json\n` +
+                                            `========================================\n` +
+                                            `${jsonText}`;
+
+                        // 4. Préparation de l'URL Email (Vers le vendeur)
+                        const sellerEmail = data.about.contact.email;
+                        
+                        // OBJET D'EMAIL ULTRA-DETAILLE
+                        const emailSubject = encodeURIComponent(`Nouvelle Commande (${infos.contact} - De ${infos.pays}) - ${infos.nom} - le ${dateString} à ${timeString}.`);
+                        const emailBody = encodeURIComponent(fullMessage);
+                        const mailtoUrl = `mailto:${sellerEmail}?subject=${emailSubject}&body=${emailBody}`;
+
+                        // 5. Exécution en deux temps
+                        if (platform === 'phone') {
+                            window.location.href = socialUrl;
+                        } else {
+                            // Étape A : On déclenche l'ouverture de l'application Email (Preuve Vendeur)
+                            window.location.href = mailtoUrl;
+
+                            // Étape B : On ouvre le réseau social dans un nouvel onglet après un court délai
+                            setTimeout(() => {
+                                let finalSocialUrl = socialUrl;
+                                // Message humain pour WhatsApp et SMS avec la référence
+                                const humanMessage = encodeURIComponent(`*Nouvelle Commande du ${dateString} à ${timeString}*\n👤 ${infos.nom}\n📞 ${infos.contact}\n📍 ${infos.adresse}\n💳 Réf Paiement: ${infos.ref_paiement}\n🛒 ${infos.msg}`);
+                                
+                                if (platform === 'whatsapp') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "text=" + humanMessage;
+                                if (platform === 'sms') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "body=" + humanMessage;
+                                
+                                if (['messenger', 'instagram', 'linkedin'].includes(platform)) {
+                                    navigator.clipboard.writeText(`Nouvelle Commande du ${dateString} à ${timeString}\nClient: ${infos.nom}\nContact: ${infos.contact}\nAdresse: ${infos.adresse}\nRéf Paiement: ${infos.ref_paiement}\nDetails: ${infos.msg}`);
+                                    alert("✅ Infos COPIÉES !\n\nL'email de preuve s'est ouvert en arrière-plan. Nous ouvrons maintenant " + platform.charAt(0).toUpperCase() + platform.slice(1) + " : faites 'COLLER' pour envoyer votre message.");
+                                }
+                                window.open(finalSocialUrl, '_blank');
+                            }, 800);
+                        }
+                    });
+                }
             }
 
             // A PROPOS & FOOTER

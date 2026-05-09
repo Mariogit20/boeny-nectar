@@ -1,0 +1,7 @@
+Information sur le client :
+
+placeholder = "Nom et Prénom du client" : OBLIGATOIRE
+placeholder = "Contact du client" : OBLIGATOIRE 
+placeholder = "Pays de DESTINATION des ACHATS" : OBLIGATOIRE
+placeholder = "Adresse de DESTINATION des ACHATS" : OBLIGATOIRE 
+placeholder = "Message : Détail des Articles achetés avec la Référence du Paiement" : OBLIGATOIRE
