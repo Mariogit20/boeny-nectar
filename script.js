@@ -239,13 +239,16 @@ document.addEventListener("DOMContentLoaded", () => {
                                             `========================================\n` +
                                             `${jsonText}`;
 
-                        // 4. Préparation de l'URL Email (Vers le vendeur)
+                        // 4. Préparation de l'URL Email (Vers le vendeur + Copie au Client)
                         const sellerEmail = data.about.contact.email;
                         
                         // OBJET D'EMAIL ULTRA-DETAILLE
                         const emailSubject = encodeURIComponent(`Nouvelle Commande (${infos.contact} - De ${infos.pays}) - ${infos.nom} - le ${dateString} à ${timeString}.`);
                         const emailBody = encodeURIComponent(fullMessage);
-                        const mailtoUrl = `mailto:${sellerEmail}?subject=${emailSubject}&body=${emailBody}`;
+                        const clientEmailEncoded = encodeURIComponent(infos.email);
+                        
+                        // NOUVEAUTÉ ICI : Ajout de "&cc=" avec l'email du client pour lui envoyer une Copie Carbone !
+                        const mailtoUrl = `mailto:${sellerEmail}?cc=${clientEmailEncoded}&subject=${emailSubject}&body=${emailBody}`;
 
                         // 5. Exécution selon la plateforme choisie
                         if (platform === 'phone') {
@@ -256,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             window.location.href = mailtoUrl;
                         } else {
                             // SI LE CLIENT CHOISIT UN RÉSEAU SOCIAL : DOUBLE ENVOI
-                            // Étape A : On déclenche d'abord l'application Email (Preuve Vendeur)
+                            // Étape A : On déclenche d'abord l'application Email (Preuve Vendeur + Copie Client)
                             window.location.href = mailtoUrl;
 
                             // Étape B : On ouvre le réseau social choisi après un court délai
