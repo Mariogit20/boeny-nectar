@@ -247,14 +247,19 @@ document.addEventListener("DOMContentLoaded", () => {
                         const emailBody = encodeURIComponent(fullMessage);
                         const mailtoUrl = `mailto:${sellerEmail}?subject=${emailSubject}&body=${emailBody}`;
 
-                        // 5. Exécution en deux temps
+                        // 5. Exécution selon la plateforme choisie
                         if (platform === 'phone') {
+                            // Appel direct
                             window.location.href = socialUrl;
+                        } else if (platform === 'email') {
+                            // SI LE CLIENT CHOISIT L'EMAIL : on ouvre directement le mail détaillé, sans double-envoi
+                            window.location.href = mailtoUrl;
                         } else {
-                            // Étape A : On déclenche l'ouverture de l'application Email (Preuve Vendeur)
+                            // SI LE CLIENT CHOISIT UN RÉSEAU SOCIAL : DOUBLE ENVOI
+                            // Étape A : On déclenche d'abord l'application Email (Preuve Vendeur)
                             window.location.href = mailtoUrl;
 
-                            // Étape B : On ouvre le réseau social dans un nouvel onglet après un court délai
+                            // Étape B : On ouvre le réseau social choisi après un court délai
                             setTimeout(() => {
                                 let finalSocialUrl = socialUrl;
                                 // Message humain pour WhatsApp et SMS avec la référence
@@ -265,7 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 
                                 if (['messenger', 'instagram', 'linkedin'].includes(platform)) {
                                     navigator.clipboard.writeText(`Nouvelle Commande du ${dateString} à ${timeString}\nClient: ${infos.nom}\nContact: ${infos.contact}\nAdresse: ${infos.adresse}\nRéf Paiement: ${infos.ref_paiement}\nDetails: ${infos.msg}`);
-                                    alert("✅ Infos COPIÉES !\n\nL'email de preuve s'est ouvert en arrière-plan. Nous ouvrons maintenant " + platform.charAt(0).toUpperCase() + platform.slice(1) + " : faites 'COLLER' pour envoyer votre message.");
+                                    alert("✅ Infos COPIÉES !\n\nL'email de preuve s'est préparé en arrière-plan. Nous ouvrons maintenant " + platform.charAt(0).toUpperCase() + platform.slice(1) + " : faites 'COLLER' pour envoyer votre message.");
                                 }
                                 window.open(finalSocialUrl, '_blank');
                             }, 800);
