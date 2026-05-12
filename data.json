@@ -106,6 +106,21 @@
         "url": "https://VOTRE_LIEN_GLOW_ICI",
         "label": "Glow",
         "color": "warning"
+      },
+      "download": {
+        "url": "#",
+        "label": "Télécharger le fichier texte",
+        "color": "dark"
+      },
+      "download_json": {
+        "url": "#",
+        "label": "Télécharger le fichier json",
+        "color": "secondary"
+      },
+      "import_json": {
+        "url": "#",
+        "label": "Importer le fichier json",
+        "color": "info"
       }
     }
   },

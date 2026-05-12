@@ -139,7 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById('modal-title').textContent = data.orderOptions.modalTitle;
                 document.getElementById('modal-subtitle').textContent = data.orderOptions.modalSubtitle;
 
-                // Construction de la boîte d'alerte avec vos 2 points d'information
                 if(data.orderOptions.paymentNotice) {
                     let numMvola = data.orderOptions.numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement || "";
                     let nomMvola = data.orderOptions.nom_du_proprietaire_du_compte_mvola_correspondant_au_numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement || "";
@@ -169,15 +168,75 @@ document.addEventListener("DOMContentLoaded", () => {
                 Object.keys(directOps).forEach(key => {
                     if(key !== 'title') {
                         const btnData = directOps[key];
+                        // Le bouton IMPORT ne doit pas être "submit" pour ne pas forcer la validation vide du formulaire
+                        let btnType = key === 'import_json' ? 'button' : 'submit'; 
+                        let btnClass = `btn btn-outline-${btnData.color} btn-lg fw-bold w-100 shadow-sm transition-hover`;
+                        
+                        if(key.includes('download') || key.includes('import')) {
+                            btnClass += " mt-2 border-2"; 
+                        }
+                        
                         directContainer.innerHTML += `
-                            <button type="submit" data-platform="${key}" data-url="${btnData.url}" class="btn btn-outline-${btnData.color} btn-lg fw-bold w-100 shadow-sm transition-hover">
-                                Contacter via ${btnData.label}
+                            <button type="${btnType}" data-platform="${key}" data-url="${btnData.url}" class="${btnClass}">
+                                ${(key.includes('download') || key.includes('import')) ? btnData.label : 'Contacter via ' + btnData.label}
                             </button>
                         `;
                     }
                 });
 
-                // --- LOGIQUE D'ENVOI DOUBLE (SOCIAL + EMAIL PROUVE AVEC JSON) ---
+                // ==========================================
+                // NOUVEAU : LOGIQUE D'IMPORTATION DU JSON
+                // ==========================================
+                const importBtn = document.querySelector('button[data-platform="import_json"]');
+                const fileInput = document.getElementById('jsonFileInput');
+                
+                if(importBtn && fileInput) {
+                    // Quand on clique sur le bouton Import, ça ouvre la fenêtre de sélection de fichier
+                    importBtn.addEventListener('click', function() {
+                        fileInput.click();
+                    });
+
+                    // Quand le client a sélectionné son fichier .json
+                    fileInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            try {
+                                const importedData = JSON.parse(event.target.result);
+                                
+                                // Remplissage automatique des champs si les données existent
+                                if(importedData.client) {
+                                    document.getElementById('clientName').value = importedData.client.nom || '';
+                                    document.getElementById('clientEmail').value = importedData.client.email || '';
+                                    document.getElementById('clientContact').value = importedData.client.telephone || '';
+                                }
+                                if(importedData.livraison) {
+                                    document.getElementById('clientCountry').value = importedData.livraison.pays || '';
+                                    document.getElementById('clientAddress').value = importedData.livraison.adresse || '';
+                                }
+                                if(importedData.paiement) {
+                                    document.getElementById('clientPaymentRef').value = importedData.paiement.reference_mobile_money || '';
+                                }
+                                if(importedData.details_commande) {
+                                    document.getElementById('clientMessage').value = importedData.details_commande || '';
+                                }
+                                
+                                alert("✅ Les informations de votre commande ont été importées avec succès !");
+                            } catch(err) {
+                                alert("❌ Erreur : Le fichier sélectionné n'est pas un reçu JSON valide.");
+                            }
+                            // On réinitialise l'input pour pouvoir sélectionner le même fichier plus tard
+                            e.target.value = '';
+                        };
+                        reader.readAsText(file);
+                    });
+                }
+
+                // ==========================================
+                // LOGIQUE D'ENVOI DOUBLE ET TÉLÉCHARGEMENTS
+                // ==========================================
                 const orderForm = document.getElementById('clientOrderForm');
                 if(orderForm) {
                     orderForm.addEventListener('submit', function(e) {
@@ -186,15 +245,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         const platform = submitter.getAttribute('data-platform');
                         const socialUrl = submitter.getAttribute('data-url');
 
-                        // 1. Récupération et Horodatage (DATE ET HEURE EXACTES)
                         const now = new Date();
                         const dateString = now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                         const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                         
-                        // Pour le nom du "fichier" virtuel JSON
                         const timestampCode = now.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0];
 
-                        // Récupération des champs du formulaire
                         const infos = {
                             nom: document.getElementById('clientName').value.trim(),
                             email: document.getElementById('clientEmail').value.trim(),
@@ -205,7 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             msg: document.getElementById('clientMessage').value.trim()
                         };
 
-                        // 2. Création de l'Objet JSON
+                        const humanReadableText = `*Nouvelle Commande du ${dateString} à ${timeString}*\n\n👤 Nom: ${infos.nom}\n📧 Email: ${infos.email}\n📞 Contact: ${infos.contact}\n🌍 DESTINATION: ${infos.pays} - ${infos.adresse}\n💳 Réf Paiement: ${infos.ref_paiement}\n\n🛒 Détails:\n${infos.msg}`;
+                        
                         const jsonObject = {
                             "date_commande": dateString,
                             "heure_commande": timeString,
@@ -223,11 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             },
                             "details_commande": infos.msg
                         };
-                        
-                        // Transformation de l'objet en texte JSON formaté
                         const jsonText = JSON.stringify(jsonObject, null, 4);
 
-                        // 3. Formatage du message complet
                         const fullMessage = `🕒 Date et Heure d'envoi : ${dateString} à ${timeString}\n\n` +
                                             `👤 CLIENT: ${infos.nom}\n📧 EMAIL: ${infos.email}\n📞 CONTACT: ${infos.contact}\n` +
                                             `🌍 DESTINATION: ${infos.pays} - ${infos.adresse}\n\n` +
@@ -239,40 +293,56 @@ document.addEventListener("DOMContentLoaded", () => {
                                             `========================================\n` +
                                             `${jsonText}`;
 
-                        // 4. Préparation de l'URL Email (Vers le vendeur + Copie au Client)
                         const sellerEmail = data.about.contact.email;
-                        
-                        // OBJET D'EMAIL ULTRA-DETAILLE
                         const emailSubject = encodeURIComponent(`Nouvelle Commande (${infos.contact} - De ${infos.pays}) - ${infos.nom} - le ${dateString} à ${timeString}.`);
                         const emailBody = encodeURIComponent(fullMessage);
                         const clientEmailEncoded = encodeURIComponent(infos.email);
-                        
-                        // Ajout de "&cc=" avec l'email du client pour lui envoyer une Copie Carbone !
                         const mailtoUrl = `mailto:${sellerEmail}?cc=${clientEmailEncoded}&subject=${emailSubject}&body=${emailBody}`;
 
-                        // 5. Exécution selon la plateforme choisie
-                        if (platform === 'phone') {
-                            // Appel direct
+                        if (platform === 'download') {
+                            // TÉLÉCHARGEMENT DU FICHIER TEXTE (.txt)
+                            const textForDownload = `${humanReadableText}\n\n========================================\nDONNÉES FORMATÉES:\n========================================\n${jsonText}`;
+                            const blob = new Blob([textForDownload], { type: 'text/plain;charset=utf-8' });
+                            const urlToDownload = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = urlToDownload;
+                            a.download = `Recu_Commande_Boeny_${timestampCode}.txt`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(urlToDownload);
+                            alert("✅ Votre résumé de commande au format TEXTE a été téléchargé avec succès !");
+
+                        } else if (platform === 'download_json') {
+                            // TÉLÉCHARGEMENT DU FICHIER JSON (.json)
+                            const blob = new Blob([jsonText], { type: 'application/json;charset=utf-8' });
+                            const urlToDownload = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = urlToDownload;
+                            a.download = `Recu_Commande_Boeny_${timestampCode}.json`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(urlToDownload);
+                            alert("✅ Votre fichier JSON a été téléchargé avec succès sur votre appareil !");
+
+                        } else if (platform === 'phone') {
                             window.location.href = socialUrl;
+
                         } else if (platform === 'email') {
-                            // SI LE CLIENT CHOISIT L'EMAIL : on ouvre directement le mail détaillé, sans double-envoi
-                            window.location.href = mailtoUrl;
-                        } else {
-                            // SI LE CLIENT CHOISIT UN RÉSEAU SOCIAL : DOUBLE ENVOI
-                            // Étape A : On déclenche d'abord l'application Email (Preuve Vendeur + Copie Client)
                             window.location.href = mailtoUrl;
 
-                            // Étape B : On ouvre le réseau social choisi après un court délai
+                        } else {
+                            window.location.href = mailtoUrl;
                             setTimeout(() => {
                                 let finalSocialUrl = socialUrl;
-                                // Message humain pour WhatsApp et SMS avec la référence ET LA DESTINATION COMPLETE
-                                const humanMessage = encodeURIComponent(`*Nouvelle Commande du ${dateString} à ${timeString}*\n👤 ${infos.nom}\n📞 ${infos.contact}\n🌍 DESTINATION: ${infos.pays} - ${infos.adresse}\n💳 Réf Paiement: ${infos.ref_paiement}\n🛒 ${infos.msg}`);
+                                const encodedHumanMessage = encodeURIComponent(humanReadableText);
                                 
-                                if (platform === 'whatsapp') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "text=" + humanMessage;
-                                if (platform === 'sms') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "body=" + humanMessage;
+                                if (platform === 'whatsapp') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "text=" + encodedHumanMessage;
+                                if (platform === 'sms') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "body=" + encodedHumanMessage;
                                 
                                 if (['messenger', 'instagram', 'linkedin'].includes(platform)) {
-                                    navigator.clipboard.writeText(`Nouvelle Commande du ${dateString} à ${timeString}\nClient: ${infos.nom}\nContact: ${infos.contact}\nDESTINATION: ${infos.pays} - ${infos.adresse}\nRéf Paiement: ${infos.ref_paiement}\nDetails: ${infos.msg}`);
+                                    navigator.clipboard.writeText(humanReadableText);
                                     alert("✅ Infos COPIÉES !\n\nL'email de preuve s'est préparé en arrière-plan. Nous ouvrons maintenant " + platform.charAt(0).toUpperCase() + platform.slice(1) + " : faites 'COLLER' pour envoyer votre message.");
                                 }
                                 window.open(finalSocialUrl, '_blank');
@@ -296,7 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById('footer-copyright').textContent = data.footer.copyright;
 
-            // Déclencher les animations au scroll
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         })
         .catch(error => console.error("Erreur Fetch :", error));
