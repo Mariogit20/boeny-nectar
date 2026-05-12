@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const emailBody = encodeURIComponent(fullMessage);
                         const clientEmailEncoded = encodeURIComponent(infos.email);
                         
-                        // NOUVEAUTÉ ICI : Ajout de "&cc=" avec l'email du client pour lui envoyer une Copie Carbone !
+                        // Ajout de "&cc=" avec l'email du client pour lui envoyer une Copie Carbone !
                         const mailtoUrl = `mailto:${sellerEmail}?cc=${clientEmailEncoded}&subject=${emailSubject}&body=${emailBody}`;
 
                         // 5. Exécution selon la plateforme choisie
@@ -265,14 +265,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             // Étape B : On ouvre le réseau social choisi après un court délai
                             setTimeout(() => {
                                 let finalSocialUrl = socialUrl;
-                                // Message humain pour WhatsApp et SMS avec la référence
-                                const humanMessage = encodeURIComponent(`*Nouvelle Commande du ${dateString} à ${timeString}*\n👤 ${infos.nom}\n📞 ${infos.contact}\n📍 ${infos.adresse}\n💳 Réf Paiement: ${infos.ref_paiement}\n🛒 ${infos.msg}`);
+                                // Message humain pour WhatsApp et SMS avec la référence ET LA DESTINATION COMPLETE
+                                const humanMessage = encodeURIComponent(`*Nouvelle Commande du ${dateString} à ${timeString}*\n👤 ${infos.nom}\n📞 ${infos.contact}\n🌍 DESTINATION: ${infos.pays} - ${infos.adresse}\n💳 Réf Paiement: ${infos.ref_paiement}\n🛒 ${infos.msg}`);
                                 
                                 if (platform === 'whatsapp') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "text=" + humanMessage;
                                 if (platform === 'sms') finalSocialUrl += (socialUrl.includes('?') ? '&' : '?') + "body=" + humanMessage;
                                 
                                 if (['messenger', 'instagram', 'linkedin'].includes(platform)) {
-                                    navigator.clipboard.writeText(`Nouvelle Commande du ${dateString} à ${timeString}\nClient: ${infos.nom}\nContact: ${infos.contact}\nAdresse: ${infos.adresse}\nRéf Paiement: ${infos.ref_paiement}\nDetails: ${infos.msg}`);
+                                    navigator.clipboard.writeText(`Nouvelle Commande du ${dateString} à ${timeString}\nClient: ${infos.nom}\nContact: ${infos.contact}\nDESTINATION: ${infos.pays} - ${infos.adresse}\nRéf Paiement: ${infos.ref_paiement}\nDetails: ${infos.msg}`);
                                     alert("✅ Infos COPIÉES !\n\nL'email de preuve s'est préparé en arrière-plan. Nous ouvrons maintenant " + platform.charAt(0).toUpperCase() + platform.slice(1) + " : faites 'COLLER' pour envoyer votre message.");
                                 }
                                 window.open(finalSocialUrl, '_blank');
