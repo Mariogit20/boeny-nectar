@@ -139,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById('modal-title').textContent = data.orderOptions.modalTitle;
                 document.getElementById('modal-subtitle').textContent = data.orderOptions.modalSubtitle;
 
+                // Construction de la boîte d'alerte avec vos 2 points d'information
                 if(data.orderOptions.paymentNotice) {
                     let numMvola = data.orderOptions.numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement || "";
                     let nomMvola = data.orderOptions.nom_du_proprietaire_du_compte_mvola_correspondant_au_numero_de_telephone_mvola_du_vendeur_direct_pour_effectuer_le_paiement || "";
@@ -185,18 +186,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 // ==========================================
-                // NOUVEAU : LOGIQUE D'IMPORTATION DU JSON
+                // LOGIQUE D'IMPORTATION DU JSON
                 // ==========================================
                 const importBtn = document.querySelector('button[data-platform="import_json"]');
                 const fileInput = document.getElementById('jsonFileInput');
                 
                 if(importBtn && fileInput) {
-                    // Quand on clique sur le bouton Import, ça ouvre la fenêtre de sélection de fichier
                     importBtn.addEventListener('click', function() {
                         fileInput.click();
                     });
 
-                    // Quand le client a sélectionné son fichier .json
                     fileInput.addEventListener('change', function(e) {
                         const file = e.target.files[0];
                         if (!file) return;
@@ -206,7 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             try {
                                 const importedData = JSON.parse(event.target.result);
                                 
-                                // Remplissage automatique des champs si les données existent
                                 if(importedData.client) {
                                     document.getElementById('clientName').value = importedData.client.nom || '';
                                     document.getElementById('clientEmail').value = importedData.client.email || '';
@@ -227,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             } catch(err) {
                                 alert("❌ Erreur : Le fichier sélectionné n'est pas un reçu JSON valide.");
                             }
-                            // On réinitialise l'input pour pouvoir sélectionner le même fichier plus tard
                             e.target.value = '';
                         };
                         reader.readAsText(file);
@@ -297,42 +294,53 @@ document.addEventListener("DOMContentLoaded", () => {
                         const emailSubject = encodeURIComponent(`Nouvelle Commande (${infos.contact} - De ${infos.pays}) - ${infos.nom} - le ${dateString} à ${timeString}.`);
                         const emailBody = encodeURIComponent(fullMessage);
                         const clientEmailEncoded = encodeURIComponent(infos.email);
+                        // LE CC EST PRÉSENT ICI :
                         const mailtoUrl = `mailto:${sellerEmail}?cc=${clientEmailEncoded}&subject=${emailSubject}&body=${emailBody}`;
 
-                        if (platform === 'download') {
-                            // TÉLÉCHARGEMENT DU FICHIER TEXTE (.txt)
-                            const textForDownload = `${humanReadableText}\n\n========================================\nDONNÉES FORMATÉES:\n========================================\n${jsonText}`;
-                            const blob = new Blob([textForDownload], { type: 'text/plain;charset=utf-8' });
-                            const urlToDownload = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = urlToDownload;
-                            a.download = `Recu_Commande_Boeny_${timestampCode}.txt`;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(urlToDownload);
-                            alert("✅ Votre résumé de commande au format TEXTE a été téléchargé avec succès !");
-
-                        } else if (platform === 'download_json') {
-                            // TÉLÉCHARGEMENT DU FICHIER JSON (.json)
-                            const blob = new Blob([jsonText], { type: 'application/json;charset=utf-8' });
-                            const urlToDownload = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = urlToDownload;
-                            a.download = `Recu_Commande_Boeny_${timestampCode}.json`;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(urlToDownload);
-                            alert("✅ Votre fichier JSON a été téléchargé avec succès sur votre appareil !");
-
-                        } else if (platform === 'phone') {
+                        // 5. Exécution selon la plateforme choisie
+                        if (platform === 'phone') {
                             window.location.href = socialUrl;
 
                         } else if (platform === 'email') {
                             window.location.href = mailtoUrl;
 
+                        } else if (platform === 'download' || platform === 'download_json') {
+                            // NOUVEAU : DOUBLE ACTION POUR LES TÉLÉCHARGEMENTS
+                            // On ouvre l'email (vers le vendeur avec CC au client)
+                            window.location.href = mailtoUrl;
+
+                            // Puis on lance le téléchargement juste après
+                            setTimeout(() => {
+                                if (platform === 'download') {
+                                    // TÉLÉCHARGEMENT TEXTE
+                                    const textForDownload = `${humanReadableText}\n\n========================================\nDONNÉES FORMATÉES:\n========================================\n${jsonText}`;
+                                    const blob = new Blob([textForDownload], { type: 'text/plain;charset=utf-8' });
+                                    const urlToDownload = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = urlToDownload;
+                                    a.download = `Recu_Commande_Boeny_${timestampCode}.txt`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    window.URL.revokeObjectURL(urlToDownload);
+                                    alert("✅ L'email contenant la référence de paiement a été préparé.\n\nVotre reçu au format TEXTE a également été téléchargé avec succès sur votre appareil !");
+                                } else {
+                                    // TÉLÉCHARGEMENT JSON
+                                    const blob = new Blob([jsonText], { type: 'application/json;charset=utf-8' });
+                                    const urlToDownload = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = urlToDownload;
+                                    a.download = `Recu_Commande_Boeny_${timestampCode}.json`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    window.URL.revokeObjectURL(urlToDownload);
+                                    alert("✅ L'email contenant la référence de paiement a été préparé.\n\nVotre reçu au format JSON a également été téléchargé avec succès sur votre appareil !");
+                                }
+                            }, 800);
+
                         } else {
+                            // DOUBLE ENVOI POUR LES RÉSEAUX SOCIAUX
                             window.location.href = mailtoUrl;
                             setTimeout(() => {
                                 let finalSocialUrl = socialUrl;
